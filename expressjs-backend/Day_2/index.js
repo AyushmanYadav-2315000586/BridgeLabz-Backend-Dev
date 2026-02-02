@@ -26,8 +26,17 @@ app.get("/", (req, res) => {
   res.send("Welcome To Home Page!");
 });
 
+
+app.get("/student/:id", (req, res) => {
+  const id = req.params.id;
+  const idx = data.findIndex((s) => s.id == id);
+  res.json(data[idx]);
+});
+
 app.get("/student", (req, res) => {
-  res.json(data);
+  const branch = req.query.branch;
+  const branchData = data.filter((s) => s.branch == branch);
+  res.json(branchData);
 });
 
 app.listen(PORT, () => {
