@@ -30,13 +30,13 @@ app.get("/users", (req, res) => {
   res.send("<h1>This is users page</h1>");
 });
 
-
 app.get("/users/:id", (req, res) => {
   const userId = req.params.id;
   res.send(`You are requesting for User Id: ${userId}`);
 });
 
-app.get("/students/search", (req, res) => {
+app.get("/students/search", async (req, res) => {
+  const students = await readFromFile();
   const branch = req.query.branch;
 
   if (!branch) {
@@ -47,7 +47,8 @@ app.get("/students/search", (req, res) => {
   res.json(foundStudents);
 });
 
-app.get("/students/:id", (req, res) => {
+app.get("/students/:id", async (req, res) => {
+  const students = await readFromFile();
   const id = req.params.id;
 
   const arrayIndex = students.findIndex((s) => s.id == id);
@@ -58,7 +59,8 @@ app.get("/students/:id", (req, res) => {
   res.json(students[arrayIndex]);
 });
 
-app.get("/students", (req, res) => {
+app.get("/students", async (req, res) => {
+  const students = await readFromFile();
   res.json(students);
 });
 
