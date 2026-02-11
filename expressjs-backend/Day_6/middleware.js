@@ -1,5 +1,6 @@
 const fs = require("fs").promises;
 const express = require("express");
+const path = require("path");
 const app = express();
 
 app.use(express.json());
@@ -14,6 +15,8 @@ app.use((req, res, next) => {
   next();
 });
 
+const usersFilePath = path.join(__dirname, "students.json");
+
 const loggerFile = async (req, res, next) => {
   try {
     const log = `Request at: ${new Date().toLocaleString()} | Method: ${req.method}\n`;
@@ -25,22 +28,57 @@ const loggerFile = async (req, res, next) => {
   }
 };
 
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  console.log(token);
+
+  if (!token) {
+    return res.status(401).json({ message: "Token Missing" });
+  }
+  if (token !== "bearertoken") {
+    return res.status(403).json({ message: " Invalid Token" });
+  }
+  next();
+};
 
 const readStudentsFromFile = async () => {
-  const data = await fs.readFile("./students.json", "utf-8");
+  const data = await fs.readFile(usersFilePath, "utf-8");
   return JSON.parse(data || "[]");
 };
 
 const writeStudentsToFile = async (records) => {
-  await fs.writeFile("./students.json", JSON.stringify(records, null, 2));
+  await fs.writeFile(usersFilePath, JSON.stringify(records, null, 2));
 };
-app.get("/students/", loggerFile, async (req, res) => {
+app.get("/students/", authMiddleware, loggerFile, async (req, res) => {
   const students = await readStudentsFromFile();
   return res.status(200).json(students);
 });
 
+app.post("/students/register", authMiddleware, async (req, res) => {
+  try {
+    const { id, name, age, city } = req.body;
+    if (!id || !name || !age || !city) {
+      return res.status(400).send("Id, Name , Age and City are required");
+    }
 
-app.put("/students/:id", async (req, res) => {
+    const students = await readStudentsFromFile();
+    const existingCheck = students.find((s) => s.id == id);
+    if (existingCheck) {
+      return res.status(409).send(`Student with ID ${id} already exists`);
+    }
+
+    const newStudent = { id, name, age, city };
+    students.push(newStudent);
+    await writeStudentsToFile(students);
+    res.status(201).send("Student added");
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: err.message });
+  }
+});
+app.put("/students/:id", authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
@@ -73,7 +111,7 @@ app.put("/students/:id", async (req, res) => {
   }
 });
 
-app.delete("/students/:id", async (req, res) => {
+app.delete("/students/:id", authMiddleware, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
 
