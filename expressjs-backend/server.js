@@ -27,10 +27,18 @@ app.post("/students/register", async (req, res) => {
   const { name, branch } = req.body;
   console.log(name, branch);
   const student = await readFile();
-  student.push({ name, branch });
+  const newId = student.length > 0 ? student[student.length - 1].id + 1 : 1;
+  student.push({ id: newId, name, branch });
   await writeFile(student);
-  res.status(201).send("Student Register Successfully");
-  res.redirect("/");
+  res.status(201).send(`
+    <h2>Student Registered Successfully</h2>
+    <p>Redirecting to home page....</p>
+    <script>
+      setTimeout(()=>{
+        window.location.href="/";
+        },2000)
+    </script>
+    `);
 });
 
 const PORT = 8000;

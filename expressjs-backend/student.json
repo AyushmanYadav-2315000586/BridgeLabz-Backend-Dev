@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Ayushman Yadav",
+    "branch": "CSE"
+  },
+  {
+    "id": 2,
+    "name": "Shiva",
+    "branch": "Mechanical"
+  },
+  {
+    "id": 3,
+    "name": "Ankit",
+    "branch": "Civil"
+  },
+  {
+    "id": 4,
+    "name": "Shivam Singh",
+    "branch": "Civil"
+  }
+]

@@ -20,6 +20,20 @@
     </form>
 
     <h3>Current Students: </h3>
+
+    <% if (student.length === 0) { %>
+  <p>No Student Registered Yet</p>
+<% } else { %>
+  <ul>
+    <% student.forEach(function(s) { %>
+      <li>
+        ID: <%= s.id %> |
+        Name: <%= s.name %> |
+        Branch: <%= s.branch %>
+      </li>
+    <% }); %>
+  </ul>
+<% } %>
     
   </body>
 </html>
