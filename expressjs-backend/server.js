@@ -1,5 +1,8 @@
+// Add branch filter using query params.
+
 const express = require("express");
 const path = require("path");
+const url = require("url");
 
 const app = express();
 const fs = require("fs").promises;
@@ -23,6 +26,29 @@ app.get("/", async (req, res) => {
   res.render("form", { student });
 });
 
+app.get("/students", async (req, res) => {
+  const parsedURL = url.parse(req.url, true);
+  let student = await readFile();
+  let branch = parsedURL.query.branch;
+  if (branch) {
+    branch = branch.charAt(0).toUpperCase() + branch.slice(1);
+  }
+  if (student.length === 0) {
+    res.send("No Student Registered");
+  } else {
+    if (branch) {
+      student = student.filter((s) => s.branch == branch);
+      if (student.length === 0) {
+        res.send("No Student Found");
+      } else {
+        res.render("student", { student });
+      }
+    } else {
+      res.render("student", { student });
+    }
+  }
+});
+
 app.post("/students/register", async (req, res) => {
   const { name, branch } = req.body;
   console.log(name, branch);
@@ -36,6 +62,23 @@ app.post("/students/register", async (req, res) => {
     <script>
       setTimeout(()=>{
         window.location.href="/";
+        },2000)
+    </script>
+    `);
+});
+
+app.get("/students/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const student = await readFile();
+  const newStudent = student.filter((s) => s.id != id);
+  await writeFile(newStudent);
+  res.send(`
+    <h2>Student Deleted Successfully</h2>
+    <p>Redirecting to home page....</p>
+    <script>
+      setTimeout(()=>{
+        window.location.href="/students";
         },2000)
     </script>
     `);

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student</title>
+</head>
+<body>
+    <h1><a href="/"><button>Back to Registration Form</button></a></h1>
+    <h3>Student: <%=student.length%></h3>
+    <table>
+        <tr>
+            <th>ID</th> 
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Action</th>
+        </tr>
+        <% student.forEach((s) => { %>
+<tr>
+    <td><%= s.id %></td>
+    <td><%= s.name %></td>
+    <td><%= s.branch %></td>
+    <td>
+        <button onclick="deleteStudent('<%= s.id %>')">Delete</button>
+    </td>
+</tr>
+<% }) %>
+
+    </table>
+    <script>
+function deleteStudent(id){
+    window.location.href = "/students/delete/" + id;
+}
+</script>
+
+</body>
+</html>
