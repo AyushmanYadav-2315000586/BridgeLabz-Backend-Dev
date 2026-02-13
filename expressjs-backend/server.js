@@ -1,5 +1,3 @@
-// Add branch filter using query params.
-
 const express = require("express");
 const path = require("path");
 const url = require("url");
